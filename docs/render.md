@@ -1,12 +1,13 @@
-# Render Backend Setup
+# FastAPI / Render (optional, local ingest only)
 
-## Service Configuration
+The hosted demo is Vercel-only. `POST /api/query` on Next.js talks to Supabase and OpenAI directly, so Render is not required.
 
-- Service type: Web Service
+Keep `services/api` for local ingest orchestration if you want a FastAPI wrapper around the C# extractor. That path is not used in production.
+
+## Local FastAPI (ingest)
+
 - Root directory: `services/api`
-- Runtime: Python
-- Build command: `pip install -r requirements.txt`
-- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Start: `uvicorn app.main:app --reload --port 8000`
 - Health check path: `/health`
 
 ## Environment Variables
@@ -14,14 +15,8 @@
 - `OPENAI_API_KEY`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `ALLOWED_ORIGINS` (include your Vercel app URL)
-- `EXTRACTOR_CLI_PATH` (runtime path to extractor binary)
+- `EXTRACTOR_CLI_PATH` (path to the local extractor binary)
 
 ## C# Extractor Runtime Notes
 
-Render must have access to the C# binary used by FastAPI subprocess calls.
-Recommended MVP options:
-
-1. Build extractor during CI and commit binary artifact for MVP experimentation.
-2. Use a Render native environment with .NET runtime available.
-3. Run extractor in a dedicated worker service and call it from API.
+Ingest needs a .NET 8 extractor binary on the same machine as FastAPI. Render’s Python runtime does not include that toolchain, which is one reason ingest stays local.

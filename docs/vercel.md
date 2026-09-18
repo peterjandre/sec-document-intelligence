@@ -1,4 +1,6 @@
-# Vercel Frontend Setup
+# Vercel Setup
+
+The UI and the query API both deploy from `apps/web`. There is no separate Render service.
 
 ## Project Configuration
 
@@ -9,11 +11,20 @@
 
 ## Environment Variables
 
-- `NEXT_PUBLIC_API_BASE_URL=https://<your-render-service>.onrender.com`
+Set these as **server** environment variables. Do not prefix them with `NEXT_PUBLIC_`:
+
+- `OPENAI_API_KEY`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Optional:
+
+- `OPENAI_CHAT_MODEL` (defaults to `gpt-4.1-nano`)
 
 ## Verification
 
-1. Open deployed app.
-2. Confirm API status shows `Online` on homepage.
+1. Open `/api/health` and confirm `{"status":"ok"}`.
+2. Open the homepage and confirm API status shows online.
 3. Run a sample question.
-4. Verify answer and citation excerpt cards render.
+4. Verify the answer and citation excerpt cards render.
+5. In the browser network panel, confirm `POST /api/query` is same-origin.

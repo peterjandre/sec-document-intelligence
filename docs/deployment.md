@@ -1,27 +1,25 @@
-# Deployment Runbook (Vercel + Render)
+# Deployment Runbook (Vercel)
 
-## 1) Render API
+The public demo is a single Next.js app. Query, retrieval, and answer generation run in `apps/web/app/api/query`.
 
-- Create a new Render Web Service from this repo.
-- Set root directory: `services/api`.
-- Build command: `pip install -r requirements.txt`.
-- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-- Configure env vars:
+## 1) Vercel
+
+- Import `peterjandre/sec-document-intelligence`.
+- Set root directory to `apps/web`.
+- Framework preset: Next.js.
+- Add server env vars (not `NEXT_PUBLIC_`):
   - `OPENAI_API_KEY`
   - `SUPABASE_URL`
   - `SUPABASE_SERVICE_ROLE_KEY`
-  - `ALLOWED_ORIGINS` (Vercel URL)
-  - `EXTRACTOR_CLI_PATH` (binary path in runtime)
+- Deploy and open `/api/health` (should return `{"status":"ok"}`).
+- Run a sample question on the homepage and confirm answer plus citation cards.
 
-## 2) Vercel Web
+## 2) Local indexing (not part of Vercel)
 
-- Import project and set root directory to `apps/web`.
-- Add env var:
-  - `NEXT_PUBLIC_API_BASE_URL=https://<render-service>.onrender.com`
-- Deploy and verify the query UI can call `/health` and `/query`.
+Rebuilding chunks still happens on a machine with the C# extractor and Python RAG CLI. See `services/rag/README.md`. The live site only reads the tables those jobs write.
 
 ## 3) Post-Deploy Verification
 
-- Trigger `POST /ingest/run` from API docs or curl.
-- Confirm `GET /ingest/status/{job_id}` returns `completed`.
-- Run web query and verify answer includes source excerpt cards.
+- `GET https://<app>.vercel.app/api/health` returns `ok`.
+- Ask a company-specific question and confirm ticker routing plus source excerpts.
+- Confirm browser network requests go to `/api/query` on the same origin, not a separate backend host.

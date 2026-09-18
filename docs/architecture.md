@@ -2,14 +2,17 @@
 
 ## Request Flow
 
-1. User asks a question in Next.js app.
-2. Frontend calls Render-hosted FastAPI `/query`.
-3. FastAPI retrieves relevant chunks from Supabase pgvector via RAG pipeline.
-4. If chunks pass the similarity threshold, OpenAI `gpt-4.1-nano` answers from those excerpts only; citations stay the retrieved chunks.
+1. User asks a question in the Next.js app.
+2. The browser calls same-origin `POST /api/query` (Vercel or `next dev`).
+3. The route embeds the question with OpenAI, retrieves chunks from Supabase pgvector, and applies ticker routing plus a similarity threshold.
+4. If chunks pass the threshold, OpenAI `gpt-4.1-nano` answers from those excerpts only; citations stay the retrieved chunks.
 
-## Ingestion Flow
+Secrets (`OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) live only in the Next.js server environment. They are never sent to the browser.
 
-1. `POST /ingest/run` accepts a local dataset path.
-2. FastAPI invokes C# extractor CLI for HTML section and field extraction.
-3. Extracted JSON is uploaded to Supabase object storage.
-4. RAG pipeline chunks text, embeds with OpenAI, and indexes to pgvector tables.
+## Ingestion Flow (local)
+
+1. The C# extractor CLI reads 10-K HTML and writes structured JSON.
+2. The Python RAG CLI chunks that JSON, embeds with OpenAI, and upserts into Supabase pgvector.
+3. Optional local FastAPI `POST /ingest/run` can wrap those same steps.
+
+The hosted Vercel app does not run extraction or ingest.

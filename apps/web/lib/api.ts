@@ -1,6 +1,3 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-
 export const MODEL_BUSY_MESSAGE =
   "The answer model is busy right now. Please try again in a moment. The retrieved excerpts are shown below.";
 
@@ -36,7 +33,7 @@ export async function runQuery(
   question: string,
   options?: { filingYear?: number }
 ): Promise<QueryResponse> {
-  const response = await fetch(`${API_BASE_URL}/query`, {
+  const response = await fetch("/api/query", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -44,12 +41,12 @@ export async function runQuery(
       ...(options?.filingYear != null ? { filing_year: options.filingYear } : {}),
     }),
   });
-  if (!response.ok) throw new Error("Failed to query API");
+  if (!response.ok) throw new Error("Failed to query filings");
   return response.json();
 }
 
 export async function getHealth(): Promise<{ status: string }> {
-  const response = await fetch(`${API_BASE_URL}/health`, { cache: "no-store" });
+  const response = await fetch("/api/health", { cache: "no-store" });
   if (!response.ok) throw new Error("API health check failed");
   return response.json();
 }

@@ -36,10 +36,9 @@ const ISSUERS = [
 ];
 
 const STACK = [
-  { name: "Next.js", detail: "App Router UI on Vercel" },
-  { name: "FastAPI", detail: "Query and ingest orchestration" },
-  { name: "C# / .NET", detail: "Regex extraction over 10-K HTML" },
-  { name: "Python", detail: "Chunking, ticker routing, RAG pipeline" },
+  { name: "Next.js", detail: "App Router UI and /api/query on Vercel" },
+  { name: "C# / .NET", detail: "Local regex extraction over 10-K HTML" },
+  { name: "Python", detail: "Local chunking and indexing into pgvector" },
   { name: "OpenAI", detail: "text-embedding-3-small and gpt-4.1-nano" },
   { name: "Supabase", detail: "Postgres, pgvector, object storage" },
 ];
@@ -74,7 +73,7 @@ export default function HomePage() {
     } catch (err) {
       setError(
         apiStatus === "offline"
-          ? "The API is offline. Start the FastAPI server and try again."
+          ? "The query API is offline. Restart the Next.js server and try again."
           : err instanceof Error
             ? err.message
             : "Unexpected query error"
@@ -308,7 +307,7 @@ export default function HomePage() {
               <span>01</span>
               <h3>Extract</h3>
               <p>
-                A C# regex CLI reads filing HTML and emits structured JSON
+                A local C# regex CLI reads filing HTML and emits structured JSON
                 (sections and fields) for each 10-K.
               </p>
             </li>
@@ -316,7 +315,7 @@ export default function HomePage() {
               <span>02</span>
               <h3>Index</h3>
               <p>
-                Python chunks those sections, embeds them with OpenAI, and
+                Local Python chunks those sections, embeds them with OpenAI, and
                 stores vectors in Supabase pgvector.
               </p>
             </li>
@@ -324,8 +323,9 @@ export default function HomePage() {
               <span>03</span>
               <h3>Retrieve</h3>
               <p>
-                FastAPI embeds the question, routes by ticker when a company is
-                named, and keeps only chunks above a similarity threshold.
+                A Next.js route embeds the question, routes by ticker when a
+                company is named, and keeps only chunks above a similarity
+                threshold.
               </p>
             </li>
             <li>

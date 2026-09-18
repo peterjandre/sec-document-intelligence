@@ -1,6 +1,8 @@
 # RAG Service Helpers
 
-Python helpers that chunk extracted 10-K JSON, embed the chunks with OpenAI (`text-embedding-3-small`), upsert documents / chunks / embeddings into Supabase, and answer questions with OpenAI (`gpt-4.1-nano`) after retrieval.
+Python helpers that chunk extracted 10-K JSON, embed the chunks with OpenAI (`text-embedding-3-small`), and upsert documents / chunks / embeddings into Supabase.
+
+The hosted Q&A path is the Next.js route `POST /api/query`. This package is the **local indexer**. It can still call `retrieve_answer` from the CLI/tests, but production traffic does not use FastAPI or this Python process.
 
 The CLI reads **extracted** filings (`data/sec-filings/extracted/*.json`), not the inspectable `*.chunks.json` previews. It re-runs the chunker, then writes to the `sec_document_intelligence_*` tables.
 

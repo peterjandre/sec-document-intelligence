@@ -15,18 +15,27 @@ Observed output:
 - RAG indexing processed extracted JSON and indexed 2 chunks in fallback mode.
 - Query flow returned an answer payload with 1 citation when Supabase credentials were not configured.
 
-## MVP Dataset Validation Procedure (8 companies, 2025 filings)
+## Live query (Vercel / `next dev`)
 
-1. Place all 2025 filing HTML files under `data/sec-filings/<ticker>/`.
-2. For each ticker, run API `POST /ingest/run` with `input_dir` for that ticker.
-3. Record `job_id`, poll `GET /ingest/status/{job_id}`, and capture validation warnings.
-4. Run a query suite from web UI and verify:
+1. Set `OPENAI_API_KEY`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY` in `apps/web/.env.local` (or Vercel env).
+2. `cd apps/web && npm run dev`
+3. `GET /api/health` returns `ok`.
+4. From the UI, run a query suite and verify:
    - answer text is returned
    - at least one citation appears
-   - excerpt maps to relevant filing section
+   - excerpt maps to a relevant filing section
+   - browser calls `/api/query` on the same origin
 
-## Deployment Validation (Vercel + Render)
+## MVP Dataset Validation Procedure (local ingest)
 
-- Vercel `NEXT_PUBLIC_API_BASE_URL` points to Render service URL.
-- Render CORS allowlist includes Vercel domain(s).
-- Render logs confirm successful extractor invocation and ingest job completion.
+1. Place filing HTML files under `data/sec-filings/`.
+2. Run the C# extractor and Python RAG CLI (see `services/rag/README.md`).
+3. Confirm chunks exist in the `sec_document_intelligence_*` tables.
+4. Query from the Next.js UI.
+
+## Deployment Validation (Vercel)
+
+- Root directory is `apps/web`.
+- Server env vars are set without `NEXT_PUBLIC_`.
+- `/api/health` is `ok`.
+- Homepage query returns an answer plus source excerpt cards.
