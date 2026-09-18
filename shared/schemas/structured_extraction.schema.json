@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StructuredExtraction",
+  "type": "object",
+  "required": ["document_id", "source_path", "sections", "fields", "validation_status", "warnings"],
+  "properties": {
+    "document_id": { "type": "string" },
+    "source_path": { "type": "string" },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "text"],
+        "properties": {
+          "name": { "type": "string" },
+          "text": { "type": "string" }
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "validation_status": {
+      "type": "string",
+      "enum": ["valid", "partially_valid", "invalid"]
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
